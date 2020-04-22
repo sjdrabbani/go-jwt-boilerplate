@@ -6,11 +6,16 @@ import (
 	"os"
 
 	"github.com/gocontactmanager/app"
+	"github.com/gocontactmanager/controllers"
 	"github.com/gorilla/mux"
 )
 
 func main() {
 	router := mux.NewRouter()
+
+	router.HandleFunc("/api/user/new", controllers.CreateAccount).Methods("POST")
+	router.HandleFunc("/api/user/login", controllers.Authenticate).Methods("POST")
+
 	router.Use(app.JwtAuthentication) // Attach JWT auth middleware
 
 	port := os.Getenv("PORT") //Get port from .env file
