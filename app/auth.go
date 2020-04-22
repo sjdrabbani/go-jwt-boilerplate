@@ -1,20 +1,21 @@
 package app
 
 import (
-	"net/http"
-	u "github.com/gocontactmanager/utils"
-	"strings"
-	"github.com/gocontactmanager/models"
-	jwt "github.com/dgrijalva/jwt-go"
-	"os"
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"strings"
+
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gocontactmanager/models"
+	u "github.com/gocontactmanager/utils"
 )
 
 var JwtAuthentication = func(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		notAuth := [string]{"/api/user/new", "/api/user/login"}
+		notAuth := []string{"/api/user/new", "/api/user/login"}
 		requestPath := r.URL.Path
 
 		// Check whether the page needs authentication
@@ -25,7 +26,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 			}
 		}
 
-		response := make(map[string] interface{})
+		response := make(map[string]interface{})
 		tokenHeader := r.Header.Get("Authorization")
 
 		// Token is missing, return 403
@@ -47,7 +48,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		}
 
 		tokenPart := splitted[1] // Grab the actual token
-		tk := &models.Token()
+		tk := &models.Token{}
 
 		token, err := jwt.ParseWithClaims(tokenPart, tk, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("token_password")), nil
@@ -70,7 +71,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		}
 
 		//Everything went well, proceed with the request and set the caller to the user retrieved from the parsed token
-		fmt.Sprintf("User %", tk.Username) //Useful for monitoring
+		fmt.Sprintf("User %", tk.UserId) //Useful for monitoring
 		ctx := context.WithValue(r.Context(), "user", tk.UserId)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r) //proceed in the middleware chain!

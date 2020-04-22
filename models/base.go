@@ -30,7 +30,8 @@ func init() {
 		fmt.Print(err)
 	}
 
-	db.Debug().AutoMigrate(&Account{}, &Contact{}) // Database Migration
+	//  &Contact{}
+	db.Debug().AutoMigrate(&Account{}) // Database Migration. Debug is logger
 }
 
 func GetDB() *gorm.DB {
